@@ -51,6 +51,20 @@ def feedback_markdown(rows: list[dict], summary: dict) -> str:
         "Topic tags are literal English/Vietnamese keyword mentions. Praise and negations can match; read the quoted evidence before deciding what to change.", ""]
     if summary.get("observedAt"):
         lines.extend([f"Observed: {md_text(summary['observedAt'])}", ""])
+    if summary.get("failedApps") or summary.get("skippedApps"):
+        lines.extend([f"Source failures: {summary.get('failedApps', 0)}. Skipped apps: {summary.get('skippedApps', 0)}. See DIAGNOSTICS before comparing apps.", ""])
+    lines.extend(["## Saved reviews by app", "", "| App | Store | Saved reviews | Sample average stars |", "| --- | --- | ---: | ---: |"])
+    grouped = {}
+    for row in rows:
+        grouped.setdefault((row["store"], row["appId"]), []).append(row)
+    for (store, _), sample in grouped.items():
+        first = sample[0]
+        label = md_link(first["appLabel"], first["appUrl"])
+        average = sum(row["rating"] for row in sample) / len(sample)
+        lines.append(f"| {label} | {md_text(store)} | {len(sample)} | {average:.2f} |")
+    if not rows:
+        lines.append("| No saved reviews | — | 0 | — |")
+    lines.append("")
     lines.extend(["## Saved sample", "", "| Rating | Saved reviews |", "| --- | ---: |"])
     lines.extend(f"| {rating} | {count} |" for rating, count in analysis["ratingHistogram"].items())
     lines.extend(["", "## Topic mentions", "", "| Keyword topic | Saved reviews mentioning it |", "| --- | ---: |"])

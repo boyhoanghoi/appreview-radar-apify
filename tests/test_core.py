@@ -172,6 +172,8 @@ class ExportTests(unittest.TestCase):
         self.assertNotIn("<script>", report)
         self.assertNotIn("<b>", report)
         self.assertNotIn("](javascript:", report)
+        self.assertIn("## Saved reviews by app", report)
+        self.assertIn("| 1 | 2.00 |", report)
 
     def test_empty_exports_and_rolling_seen_list_only_saved(self):
         row = tag_review(review())
