@@ -7,6 +7,9 @@
     "properties": {
       "reviewKey": {"type": "string", "title": "Stable review key"},
       "reviewId": {"type": "string", "title": "Source review ID"},
+      "reviewChange": {"type": "string", "enum": ["NEW", "UPDATED", "UNCHANGED"], "title": "Compared with supplied snapshot", "description": "NEW is new to this baseline, not proof of recent publication. No deletion inference."},
+      "contentHash": {"type": "string", "title": "Review content fingerprint"},
+      "previousContentHash": {"type": ["string", "null"], "title": "Previous saved fingerprint"},
       "store": {"type": "string", "enum": ["google-play", "app-store"], "title": "App store"},
       "appId": {"type": "string", "title": "Source app ID"},
       "appLabel": {"type": "string", "title": "App label", "description": "Demo label when recognized, otherwise app ID. Not fetched or verified metadata."},
@@ -19,6 +22,7 @@
       "appVersion": {"type": ["string", "null"], "title": "App version exposed by review"},
       "helpfulVotes": {"type": ["integer", "null"], "title": "Source helpful-vote count"},
       "developerReply": {"type": ["object", "null"], "title": "Developer reply when exposed", "description": "Google Play only in this reader. Null does not prove there is no reply on other interfaces."},
+      "developerReplyStatus": {"type": "string", "enum": ["present", "not-shown", "unavailable"], "title": "Reply visibility in source", "description": "Apple RSS is unavailable. Google Play has a visible reply or none shown; not a claim about other interfaces."},
       "countryRequested": {"type": "string", "title": "Requested storefront"},
       "languageRequested": {"type": ["string", "null"], "title": "Requested Google Play language hint"},
       "topicTags": {"type": "array", "items": {"type": "string"}, "title": "Keyword topic mentions"},
@@ -34,7 +38,7 @@
   "views": {
     "reviews": {
       "title": "Feedback shortlist",
-      "transformation": {"fields": ["appLabel", "store", "rating", "reviewTitle", "reviewText", "topicTags", "reviewDate", "appVersion", "appUrl"]},
+      "transformation": {"fields": ["appLabel", "store", "reviewChange", "rating", "reviewTitle", "reviewText", "topicTags", "developerReplyStatus", "reviewDate", "appVersion", "appUrl"]},
       "display": {"component": "table", "properties": {"appUrl": {"format": "link"}, "topicTags": {"format": "array"}, "reviewDate": {"format": "date"}}}
     },
     "evidence": {

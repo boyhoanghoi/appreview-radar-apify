@@ -1,11 +1,13 @@
 """Validate identifiers and filters before generating fixed public feed URLs."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import math
 import re
 from typing import Any
 from urllib.parse import parse_qs, urlsplit
+
+from .snapshot import validate_snapshot
 
 
 @dataclass(frozen=True)
@@ -94,6 +96,10 @@ class RunConfig:
     feature_requests_only: bool = False
     reviewed_after: datetime | None = None
     known_review_ids: tuple[str, ...] = ()
+    previous_snapshot: dict = field(default_factory=dict)
+    changed_only: bool = False
+    reply_filter: str = "all"
+    app_version_keywords: tuple[str, ...] = ()
     timeout_seconds: int = 20
     min_delay_seconds: float = 0.5
 
@@ -101,7 +107,7 @@ class RunConfig:
     def from_dict(cls, data: Any) -> "RunConfig":
         if not isinstance(data, dict):
             raise ValueError("Input must be a JSON object.")
-        allowed = {"googlePlayApps", "appStoreApps", "appPreset", "country", "language", "maxReviews", "maxReviewsPerApp", "maxPagesPerApp", "minRating", "maxRating", "includeKeywords", "excludeKeywords", "topicFilters", "featureRequestsOnly", "reviewedAfter", "knownReviewIds", "timeoutSeconds", "minDelaySeconds"}
+        allowed = {"googlePlayApps", "appStoreApps", "appPreset", "country", "language", "maxReviews", "maxReviewsPerApp", "maxPagesPerApp", "minRating", "maxRating", "includeKeywords", "excludeKeywords", "topicFilters", "featureRequestsOnly", "reviewedAfter", "knownReviewIds", "timeoutSeconds", "minDelaySeconds", "previousSnapshot", "changedOnly", "replyFilter", "appVersionKeywords"}
         unknown = [str(k) for k in data if k not in allowed and not str(k).startswith("__")]
         if unknown:
             raise ValueError("Unknown input field(s): " + ", ".join(sorted(unknown)))
@@ -128,6 +134,12 @@ class RunConfig:
         feature = data.get("featureRequestsOnly", False)
         if not isinstance(feature, bool):
             raise ValueError("featureRequestsOnly must be true or false.")
+        changed = data.get("changedOnly", False)
+        if not isinstance(changed, bool):
+            raise ValueError("changedOnly must be true or false.")
+        reply = data.get("replyFilter", "all")
+        if not isinstance(reply, str) or reply not in {"all", "with-reply", "without-visible-reply"}:
+            raise ValueError("replyFilter must be all, with-reply or without-visible-reply. Apple reply status is unavailable.")
         topics = words(data.get("topicFilters", []), "topicFilters")
         if any(t not in {"stability", "performance", "billing", "login", "ads", "privacy", "feature-request"} for t in topics):
             raise ValueError("Unknown topicFilters value; use stability, performance, billing, login, ads, privacy or feature-request.")
@@ -148,4 +160,6 @@ class RunConfig:
             min_rating=lower, max_rating=upper, include_keywords=words(data.get("includeKeywords", []), "includeKeywords"),
             exclude_keywords=words(data.get("excludeKeywords", []), "excludeKeywords"), topic_filters=topics,
             feature_requests_only=feature, reviewed_after=after, known_review_ids=tuple(dict.fromkeys(v.strip() for v in prior)),
+            previous_snapshot=validate_snapshot(data.get("previousSnapshot", {}), country.lower(), language.lower()),
+            changed_only=changed, reply_filter=reply, app_version_keywords=words(data.get("appVersionKeywords", []), "appVersionKeywords"),
             timeout_seconds=integer(data.get("timeoutSeconds", 20), "timeoutSeconds", 5, 45), min_delay_seconds=float(delay))

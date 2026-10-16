@@ -78,7 +78,7 @@ Sao chép mảng trong `KNOWN_REVIEW_IDS` của lần chạy trước vào trư�
 
 Đánh giá có khóa đã biết được bỏ qua trước khi lưu và tính phí. Chỉ đánh giá thực sự lưu thành công mới được thêm vào lịch sử; tối đa giữ 10.000 khóa. Khi vượt giới hạn, khóa cũ có thể rơi khỏi danh sách.
 
-**Tạo lịch chạy không tự truyền lịch sử này.** Workflow gọi Actor phải tự đọc danh sách cũ rồi gửi vào input mới. Nếu người dùng sửa một đánh giá nhưng ID giữ nguyên, công cụ vẫn bỏ qua; đây là chống trùng, không phải theo dõi nội dung đã chỉnh sửa.
+**Tạo lịch chạy không tự truyền lịch sử này.** Workflow gọi Actor phải tự đọc danh sách cũ rồi gửi vào input mới. Trong chế độ danh sách mã, review đã sửa cùng ID vẫn bị bỏ qua. Muốn theo dõi thay đổi nội dung cùng mã, dùng [chế độ snapshot](CHANGE_MONITOR_VI.md) và để `knownReviewIds` rỗng.
 
 Nếu chạy trên máy bằng CLI:
 

@@ -48,4 +48,4 @@ Prepare one clear public example, then ask a small number of relevant app develo
 
 Record where users arrive, whether a first run succeeds, which fields/filters they use, whether they run it again, and any verified paying usage. Do not count owner tests as customer traction. A useful early signal is a user returning to answer a real product question, followed by a genuine paid run; neither is promised by publication.
 
-Only add more stores, automatic integrations, AI summarization, or pricing complexity after observing a repeated unmet need. Automatic scheduled-state handoff and edited-review change detection are **not implemented** in the launch contract; caller-supplied known IDs are.
+Only add more stores, automatic integrations, AI summarization, or pricing complexity after observing a repeated unmet need. Automatic scheduled-state handoff is not implemented. The upgraded Actor supports [bounded caller-supplied snapshot tracking](CHANGE_MONITOR.md) for exposed same-ID edits; it does not reconcile complete history or infer deletions. The legacy known-ID mode still skips edited keys by design.

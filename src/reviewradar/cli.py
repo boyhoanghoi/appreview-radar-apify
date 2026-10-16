@@ -13,9 +13,14 @@ def main() -> int:
     parser.add_argument("--input", required=True, type=Path)
     parser.add_argument("--output", default=Path("output"), type=Path)
     parser.add_argument("--previous-ids", type=Path, help="Load known_review_ids.json exported by an earlier run.")
+    parser.add_argument("--previous-snapshot", type=Path, help="Load snapshot.json to detect same-ID edits; use changedOnly to suppress unchanged reviews.")
     args = parser.parse_args()
     try:
         data = json.loads(args.input.read_text(encoding="utf-8-sig"))
+        if args.previous_snapshot:
+            if not isinstance(data, dict):
+                raise ValueError("Input must be a JSON object.")
+            data = {**data, "previousSnapshot": json.loads(args.previous_snapshot.read_text(encoding="utf-8-sig"))}
         config = RunConfig.from_dict(data)
         if args.previous_ids:
             prior = json.loads(args.previous_ids.read_text(encoding="utf-8-sig"))

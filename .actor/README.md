@@ -33,6 +33,8 @@ Click **Start**, then open the dataset and the **Output tab**. It links `results
 - **Transparent topic tags:** stability, performance, billing, login, ads, privacy, and feature-request mentions using English/Vietnamese literal rules.
 - **Ready-to-use exports:** dataset/CSV, Markdown feedback report, and `TOPICS` with per-topic counts and evidence.
 - **Repeat-review deduplication:** pass `KNOWN_REVIEW_IDS` into your next input to skip saved reviews before output and charging.
+- **Review edit monitoring:** supply `SNAPSHOT` and `changedOnly` to detect exposed same-ID content changes while skipping unchanged review events.
+- **Release/support filters:** match source app versions or visible Google Play developer replies. Apple RSS reply status remains unavailable.
 
 Topic matches are rules, not AI analysis or a verified bug diagnosis. Read the original evidence: a request phrase does not prove intent or demand. The report uses saved reviews only; it is not representative polling or the app's overall rating.
 
@@ -44,7 +46,25 @@ Topic matches are rules, not AI analysis or a verified bug diagnosis. Read the o
 
 **Find feature-request mentions:** set `featureRequestsOnly: true`. Results must contain a supported request phrase; they are candidates for human review, not verified feature requests.
 
-**Monitor reviews already exported:** copy the previous `KNOWN_REVIEW_IDS` array into `knownReviewIds`. Your workflow must pass that state explicitly; attaching a schedule does not do it automatically. Same-key edits are skipped, so this is not review change detection.
+**Skip reviews already exported:** copy the previous `KNOWN_REVIEW_IDS` array into `knownReviewIds`. Your workflow must pass that state explicitly; attaching a schedule does not do it automatically. This mode skips same-key edits too.
+
+## Track review edits with a snapshot
+
+Use `previousSnapshot` plus `changedOnly: true`, and leave `knownReviewIds` empty.
+The first run produces `SNAPSHOT`; copy it to the next run's `previousSnapshot`
+with the same country/language. The Actor compares exposed title/text, rating,
+app version and developer reply. It saves `NEW` to that baseline or `UPDATED`
+reviews; matching `UNCHANGED` reviews are skipped before output and billing.
+
+A `NEW` key may be an old review not yet in your supplied snapshot. Source
+windows are partial; missing reviews never become deletion claims. Only saved
+rows advance the baseline. Snapshots retain at most 10,000 hashes and 2 MiB;
+oldest entries can be evicted with `snapshotTruncated: true`. Same-key reviews in
+`knownReviewIds` still take priority and are skipped without edit checking.
+Default `changedOnly: false` saves/bills matching unchanged rows.
+
+[Snapshot workflow and caveats](https://github.com/boyhoanghoi/appreview-radar-apify/blob/main/docs/CHANGE_MONITOR.md) ·
+[Hướng dẫn theo dõi review đã sửa](https://github.com/boyhoanghoi/appreview-radar-apify/blob/main/docs/CHANGE_MONITOR_VI.md)
 
 ## Main inputs
 
@@ -62,6 +82,9 @@ Topic matches are rules, not AI analysis or a verified bug diagnosis. Read the o
 | `featureRequestsOnly` | Require an explicit supported request phrase |
 | `reviewedAfter` | ISO cutoff; unknown review dates are excluded |
 | `knownReviewIds` | Saved keys to skip, up to 10,000 |
+| `previousSnapshot`, `changedOnly` | Caller-supplied review fingerprints and optional suppression of unchanged rows |
+| `appVersionKeywords` | Source-version substring filter; missing versions excluded when set |
+| `replyFilter` | `all`, `with-reply`, or `without-visible-reply`; reply-specific filters exclude Apple RSS |
 
 Preset apps and supplied apps are combined and deduplicated. App names are not searched automatically; use an ID or a store listing URL.
 
@@ -79,6 +102,7 @@ At that rate, 20 saved reviews generate **$0.01** in review events. Source failu
 - The requested country is not verified reviewer residence. Language is a Google Play hint, not a guaranteed review-language filter.
 - Failures are explained in `DIAGNOSTICS`; they are not silently treated as an app having no reviews.
 - Known-key history rolls at 10,000 saved keys and must be passed explicitly. Same-key edited reviews are skipped.
+- Snapshot edit tracking is separate from known-key skipping and also needs explicit state handoff. Only exposed bounded fields are compared; changes outside fetched windows or beyond the text limit cannot be recovered.
 - No login, private data access, CAPTCHA bypass, proxy rotation, or automated review posting.
 
 [Source policy and field caveats](https://github.com/boyhoanghoi/appreview-radar-apify/blob/main/docs/SOURCES.md) · [Open-source repository](https://github.com/boyhoanghoi/appreview-radar-apify)

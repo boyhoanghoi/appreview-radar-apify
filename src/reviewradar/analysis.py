@@ -39,6 +39,15 @@ def tag_review(row: dict) -> dict:
 def filter_reason(row: dict, config: RunConfig) -> str | None:
     if not config.min_rating <= row["rating"] <= config.max_rating:
         return "rating_outside_range"
+    if config.app_version_keywords and not any(term in (row.get("appVersion") or "").casefold() for term in config.app_version_keywords):
+        return "app_version_not_matched"
+    if config.reply_filter != "all":
+        if row.get("developerReplyStatus") == "unavailable":
+            return "reply_status_unavailable"
+        if config.reply_filter == "with-reply" and row.get("developerReplyStatus") != "present":
+            return "no_visible_reply"
+        if config.reply_filter == "without-visible-reply" and row.get("developerReplyStatus") != "not-shown":
+            return "has_visible_reply"
     text = (row["reviewTitle"] + "\n" + row["reviewText"]).casefold()
     if config.include_keywords and not any(word in text for word in config.include_keywords):
         return "keyword_not_included"

@@ -41,6 +41,7 @@ class ConfigTests(unittest.TestCase):
         base = {"appPreset": "chatgpt"}
         for changes in ({"maxReviews": True}, {"minDelaySeconds": float("nan")}, {"minRating": 5, "maxRating": 3},
                         {"topicFilters": ["sentiment"]}, {"featureRequestsOnly": "yes"}, {"country": "../../"}, {"language": "en&x=1"},
+                        {"changedOnly": "yes"}, {"replyFilter": "none"}, {"appVersionKeywords": "1.0"}, {"previousSnapshot": {"version": 1}},
                         {"reviewedAfter": "bad-date"}, {"knownReviewIds": [""]}, {"unknown": 1},
                         {"googlePlayApps": [f"com.x.app{i}" for i in range(10)]}):
             with self.subTest(changes=changes), self.assertRaises(ValueError):

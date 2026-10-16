@@ -9,6 +9,7 @@ from .analysis import filter_reason, saved_analysis, tag_review
 from .config import RunConfig
 from .sources import fetch_page
 from .transport import FeedError, ReviewClient
+from .snapshot import SnapshotTracker, classify_review, validate_snapshot
 
 MAX_RUN_SECONDS = 180
 
@@ -19,11 +20,14 @@ async def run_pipeline(config: RunConfig, on_result: Callable[[dict], Awaitable[
     observed = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     rows, diagnostics, seen = [], [], set()
     known = set(config.known_review_ids)
+    previous = validate_snapshot(config.previous_snapshot, config.country, config.language)
+    tracker = SnapshotTracker(previous)
     stopped = False
     async with client_factory(config) as client:
         for app in config.apps:
             state = {"app": app.key, "status": "skipped" if stopped else "success", "pagesRead": 0, "requests": 0,
                 "fetchedReviews": 0, "invalidReviews": 0, "filteredReviews": 0, "knownReviewsSkipped": 0,
+                "unchangedReviewsSkipped": 0,
                 "duplicateReviews": 0, "savedReviews": 0, "filterReasons": {}, "accessibleWindowEnded": False,
                 "fullHistoryCoverage": False, "stopReason": "global_or_spending_limit" if stopped else None}
             diagnostics.append(state)
@@ -44,6 +48,8 @@ async def run_pipeline(config: RunConfig, on_result: Callable[[dict], Awaitable[
                     state["pagesRead"] += 1
                     state["fetchedReviews"] += page.raw_count
                     state["invalidReviews"] += page.invalid_count
+                    if page.invalid_count and not page.rows:
+                        raise FeedError("all_records_invalid", "No returned review could be normalized; the source schema or text encoding may have changed.")
                     next_token = page.next_token
                     stop_app = False
                     for index, raw in enumerate(page.rows):
@@ -55,17 +61,22 @@ async def run_pipeline(config: RunConfig, on_result: Callable[[dict], Awaitable[
                             state["duplicateReviews"] += 1
                             continue
                         seen.add(key)
-                        row = tag_review({**raw, "observedAt": observed})
+                        reply_status = "unavailable" if raw["store"] == "app-store" else "present" if raw.get("developerReply") else "not-shown"
+                        row = tag_review(classify_review({**raw, "observedAt": observed, "developerReplyStatus": reply_status}, previous))
                         reason = filter_reason(row, config)
                         if reason:
                             state["filteredReviews"] += 1
                             state["filterReasons"][reason] = state["filterReasons"].get(reason, 0) + 1
+                            continue
+                        if config.changed_only and row["reviewChange"] == "UNCHANGED":
+                            state["unchangedReviewsSkipped"] += 1
                             continue
                         if on_result is not None and not await on_result(row):
                             stopped = stop_app = True
                             state["stopReason"] = "spending_or_callback_limit"
                             break
                         rows.append(row)
+                        tracker.remember(row)
                         state["savedReviews"] += 1
                         more = index < len(page.rows) - 1 or next_token is not None
                         if len(rows) >= config.max_reviews:
@@ -98,12 +109,15 @@ async def run_pipeline(config: RunConfig, on_result: Callable[[dict], Awaitable[
                     stopped = True
             state["requests"] = client.requests - before
         requests = client.requests
-    return {"results": rows, "diagnostics": diagnostics, "summary": {
+    return {"results": rows, "diagnostics": diagnostics, "snapshot": tracker.snapshot, "summary": {
         "inputApps": len(config.apps), "successfulApps": sum(s["status"] == "success" for s in diagnostics),
         "failedApps": sum(s["status"] == "failed" for s in diagnostics), "skippedApps": sum(s["status"] == "skipped" for s in diagnostics),
         "savedReviews": len(rows), "fetchedReviews": sum(s["fetchedReviews"] for s in diagnostics),
         "invalidReviews": sum(s["invalidReviews"] for s in diagnostics), "filteredReviews": sum(s["filteredReviews"] for s in diagnostics),
         "knownReviewsSkipped": sum(s["knownReviewsSkipped"] for s in diagnostics),
+        "unchangedReviewsSkipped": sum(s["unchangedReviewsSkipped"] for s in diagnostics),
+        "snapshotTruncated": tracker.truncated,
+        "savedReviewChanges": {kind: sum(row["reviewChange"] == kind for row in rows) for kind in ("NEW", "UPDATED", "UNCHANGED")},
         "duplicateReviews": sum(s["duplicateReviews"] for s in diagnostics), "requests": requests,
         "fullHistoryCoverage": False, "countsScope": "saved-results-only", "analysis": saved_analysis(rows),
         "countryRequested": config.country, "languageRequested": config.language,

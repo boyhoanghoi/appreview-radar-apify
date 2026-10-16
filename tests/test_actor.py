@@ -5,6 +5,11 @@ from unittest.mock import AsyncMock, patch
 
 from reviewradar.actor import BILLABLE_EVENT, run_actor
 from reviewradar.analysis import tag_review
+from reviewradar.config import RunConfig
+from reviewradar.runner import run_pipeline
+from reviewradar.snapshot import review_fingerprint, validate_snapshot
+from reviewradar.sources import ReviewPage
+from test_core import FakeClient
 from test_core import review
 
 
@@ -78,12 +83,32 @@ class BillingTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_zero_budget_performs_no_source_requests_and_preserves_prior_keys(self):
         actor = FakeActor(FakeManager(remaining=0))
+        snapshot = validate_snapshot({}, "us", "en")
+        snapshot["reviews"]["old-key"] = "a" * 64
+        actor.input["previousSnapshot"] = snapshot
         runner = AsyncMock()
         await self.run_fake(actor, runner)
         runner.assert_not_awaited()
         self.assertEqual(actor.events, [])
         self.assertEqual(actor.writes["KNOWN_REVIEW_IDS"], ["old"])
         self.assertEqual(actor.writes["SUMMARY"]["analysis"]["savedReviews"], 0)
+        self.assertEqual(actor.writes["SNAPSHOT"], snapshot)
+
+    async def test_snapshot_advances_only_for_final_affordable_edited_review(self):
+        actor = FakeActor(FakeManager(remaining=1))
+        prior = validate_snapshot({}, "us", "en")
+        original = review("edit")
+        prior["reviews"][original["reviewKey"]] = review_fingerprint(original)
+        actor.input = {"googlePlayApps": ["com.example.app"], "changedOnly": True, "previousSnapshot": prior}
+        async def fetch(client, app, config, token):
+            return ReviewPage([review("edit", text="Edited now"), review("unpaid")], None, 2)
+        async def actual(config, save):
+            return await run_pipeline(config, save, client_factory=FakeClient, page_fetcher=fetch)
+        await self.run_fake(actor, actual)
+        self.assertEqual(actor.events, [BILLABLE_EVENT])
+        self.assertEqual(actor.dataset[0]["reviewChange"], "UPDATED")
+        self.assertEqual(actor.writes["SNAPSHOT"]["reviews"], {original["reviewKey"]: actor.dataset[0]["contentHash"]})
+        self.assertEqual(actor.writes["SUMMARY"]["savedReviewChanges"], {"NEW": 0, "UPDATED": 1, "UNCHANGED": 0})
 
     async def test_non_ppe_run_has_no_explicit_event_charge(self):
         actor = FakeActor(FakeManager(ppe=False))

@@ -15,6 +15,8 @@ Collect public mobile-app reviews, keep the ratings and keywords that matter, an
 - Find literal mentions of stability, performance, billing, login, ads, privacy, or feature requests, with matching text as evidence.
 - Download CSV and a Markdown feedback report with counts, rating distribution, topic matches, and source excerpts.
 - Pass saved review keys into the next run to skip reviews you already exported.
+- Supply a fingerprint snapshot to catch same-ID text/rating/version/reply edits; `changedOnly` skips unchanged reviews before billing.
+- Filter by the app version exposed by a review and by visible Google Play reply status.
 - Start from the ChatGPT demo preset, or supply your own app IDs and store links.
 
 Topic matches are transparent English/Vietnamese keyword rules. They are not an AI model, a verified bug diagnosis, or proof that the developer should build a feature. No LLM subscription, store account, or paid upstream API is required.
@@ -58,6 +60,9 @@ This input requests **up to 20 saved reviews**, with up to 10 per app. It may re
 | `featureRequestsOnly` | Keep explicit feature-request phrase matches | `false` |
 | `reviewedAfter` | ISO date/time cutoff; reviews with unknown dates are excluded | Unset |
 | `knownReviewIds` | Previously saved stable review keys to skip | Empty list; maximum 10,000 |
+| `previousSnapshot`, `changedOnly` | Compare exposed content with a supplied baseline and optionally save only new-to-baseline/edited reviews | Empty baseline; `false` |
+| `appVersionKeywords` | Require any substring in the source review's app version | Empty list; unknown versions excluded when set |
+| `replyFilter` | `all`, `with-reply`, `without-visible-reply` | `all`; Apple reply status is unavailable |
 
 Filters combine: a review must satisfy the rating/date limits, any selected included keyword, any selected topic, and the feature-request option when enabled; an excluded keyword always removes it. English/Vietnamese topic rules can miss paraphrases or match a negation. Inspect the original review and match evidence before drawing conclusions.
 
@@ -74,6 +79,7 @@ The default dataset contains **only saved, matching reviews**, with a stable rev
 | `feedback-report.md` | Read or share counts, rating histogram, topic matches, and source excerpts |
 | `TOPICS` | Per-topic counts and supporting review evidence |
 | `KNOWN_REVIEW_IDS` | Rolling saved-review keys for the next run |
+| `SNAPSHOT` | Bounded review fingerprints for detecting same-ID content edits |
 | `SUMMARY` | Output counts and run limits |
 | `DIAGNOSTICS` | Source failures, fetched/filtered counts, and coverage limits |
 | `OUTPUT` | Complete JSON report; the Actor's Output tab links individual artifacts |
@@ -84,7 +90,16 @@ The report describes **saved rows only**. Its rating average is not the app's pu
 
 Copy the previous run's `KNOWN_REVIEW_IDS` array into the next input's `knownReviewIds`. Keys have the form `{store}:{appId}:{reviewId}`. Existing keys are skipped before saving and charging. Only actually saved rows enter the rolling list; filtered or failed reviews do not consume its 10,000-key history.
 
-**State is explicit.** Creating a schedule alone does not pass previous IDs into the next run. Your calling workflow must read and pass the previous output. Edited reviews that retain the same key are skipped; this is review deduplication, not change detection. Older keys can fall out when the history exceeds 10,000.
+**State is explicit.** Creating a schedule alone does not pass previous IDs into the next run. Your calling workflow must read and pass the previous output. In this known-ID mode, edited reviews that retain the same key are skipped. Older keys can fall out when the history exceeds 10,000.
+
+For **edit monitoring**, keep `knownReviewIds` empty and pass `SNAPSHOT` into
+`previousSnapshot` with `changedOnly: true`. Rows are `NEW` to that baseline,
+`UPDATED` or `UNCHANGED`; unchanged reviews generate no saved row/event in this
+mode. Missing reviews are never marked deleted. Snapshots are scoped to the
+same country/language and bounded to 10,000 entries/2 MiB. Default
+`changedOnly: false` still saves/bills matching unchanged reviews. See the
+[English change-monitor guide](docs/CHANGE_MONITOR.md) or
+[Vietnamese guide](docs/CHANGE_MONITOR_VI.md) for the complete state contract.
 
 ## Run locally
 
@@ -104,6 +119,13 @@ reviewradar --input examples/first-run.json --previous-ids output/known_review_i
 ```
 
 Local execution does not charge Apify Actor events. Cloud execution uses the published Actor's current pricing and platform terms.
+
+For snapshot-based edit monitoring instead:
+
+```powershell
+reviewradar --input examples/change-monitor.json --output output/monitor-first
+reviewradar --input examples/change-monitor.json --previous-snapshot output/monitor-first/snapshot.json --output output/monitor-next
+```
 
 ## Pricing
 

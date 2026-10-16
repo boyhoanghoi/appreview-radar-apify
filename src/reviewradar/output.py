@@ -8,6 +8,7 @@ import re
 from urllib.parse import quote, urlsplit
 
 from .analysis import saved_analysis, topic_report
+from .snapshot import write_snapshot
 
 
 def spreadsheet_cell(value) -> str:
@@ -20,8 +21,8 @@ def spreadsheet_cell(value) -> str:
 
 
 def reviews_csv(rows: list[dict]) -> str:
-    fields = ["reviewKey", "store", "appId", "appLabel", "appLabelSource", "rating", "reviewTitle", "reviewText", "reviewTextTruncated",
-              "reviewDate", "appVersion", "helpfulVotes", "developerReply", "topicTags", "topicMatches", "hasFeatureRequestPhrase",
+    fields = ["reviewKey", "reviewChange", "contentHash", "previousContentHash", "store", "appId", "appLabel", "appLabelSource", "rating", "reviewTitle", "reviewText", "reviewTextTruncated",
+              "reviewDate", "appVersion", "helpfulVotes", "developerReply", "developerReplyStatus", "topicTags", "topicMatches", "hasFeatureRequestPhrase",
               "analysisMethod", "countryRequested", "languageRequested", "reviewId", "appUrl", "sourceUrl", "observedAt"]
     stream = io.StringIO(newline="")
     writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\r\n")
@@ -53,6 +54,10 @@ def feedback_markdown(rows: list[dict], summary: dict) -> str:
         lines.extend([f"Observed: {md_text(summary['observedAt'])}", ""])
     if summary.get("failedApps") or summary.get("skippedApps"):
         lines.extend([f"Source failures: {summary.get('failedApps', 0)}. Skipped apps: {summary.get('skippedApps', 0)}. See DIAGNOSTICS before comparing apps.", ""])
+    if summary.get("savedReviewChanges"):
+        changes = summary["savedReviewChanges"]
+        lines.extend([f"Compared with supplied snapshot: {changes.get('NEW', 0)} new to this baseline, {changes.get('UPDATED', 0)} updated, {changes.get('UNCHANGED', 0)} unchanged saved reviews.", "",
+                      "New to a snapshot does not mean newly posted. Missing reviews never imply deletion.", ""])
     lines.extend(["## Saved reviews by app", "", "| App | Store | Saved reviews | Sample average stars |", "| --- | --- | ---: | ---: |"])
     grouped = {}
     for row in rows:
@@ -101,3 +106,5 @@ def export_results(report: dict, directory: str | Path) -> None:
     (directory / "feedback-report.md").write_text(feedback_markdown(report["results"], report["summary"]), encoding="utf-8")
     if "knownReviewIds" in report:
         (directory / "known_review_ids.json").write_text(json.dumps(report["knownReviewIds"], indent=2) + "\n", encoding="utf-8")
+    if "snapshot" in report:
+        write_snapshot(report["snapshot"], directory / "snapshot.json")

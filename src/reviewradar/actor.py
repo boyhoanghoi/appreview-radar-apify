@@ -62,6 +62,7 @@ async def run_actor():
         else:
             report = await run_pipeline(config, save)
         report["results"] = saved
+        report.setdefault("snapshot", config.previous_snapshot)
         known, truncated = rolling_known_ids(config.known_review_ids, saved)
         report["knownReviewIds"] = known
         report["summary"].update({"savedReviews": len(saved), "analysis": saved_analysis(saved), "countsScope": "saved-results-only",
@@ -72,6 +73,7 @@ async def run_actor():
         await Actor.set_value("SUMMARY", report["summary"])
         await Actor.set_value("DIAGNOSTICS", report["diagnostics"])
         await Actor.set_value("KNOWN_REVIEW_IDS", known)
+        await Actor.set_value("SNAPSHOT", report["snapshot"])
         await Actor.set_value("TOPICS", topic_report(saved))
         await Actor.set_value("results.csv", reviews_csv(saved), content_type="text/csv; charset=utf-8")
         await Actor.set_value("feedback-report.md", feedback_markdown(saved, report["summary"]), content_type="text/markdown; charset=utf-8")

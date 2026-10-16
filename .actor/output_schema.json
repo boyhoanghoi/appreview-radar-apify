@@ -7,6 +7,7 @@
     "feedbackReport": {"type": "string", "title": "Feedback report (Markdown)", "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/feedback-report.md"},
     "topics": {"type": "string", "title": "Keyword topic counts and evidence", "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/TOPICS"},
     "knownReviewIds": {"type": "string", "title": "Review keys for your next run", "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/KNOWN_REVIEW_IDS"},
+    "snapshot": {"type": "string", "title": "Review fingerprints for change tracking", "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/SNAPSHOT"},
     "summary": {"type": "string", "title": "Saved-sample summary", "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/SUMMARY"},
     "diagnostics": {"type": "string", "title": "Source windows, filters and failures", "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/DIAGNOSTICS"},
     "report": {"type": "string", "title": "Complete JSON report", "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/OUTPUT"}

@@ -63,7 +63,7 @@ Open the completed run's `KNOWN_REVIEW_IDS` record. Pass its array into `knownRe
 - Existing keys are skipped before saving and charging.
 - Only saved rows are added to the rolling list; filtered/failed reviews are not.
 - The history holds at most 10,000 keys. Older keys may eventually be eligible again.
-- Same-key edits are skipped. This is not review change detection.
+- In this known-ID mode, same-key edits are skipped. Use the [snapshot workflow](CHANGE_MONITOR.md) with an empty known-ID list to monitor exposed same-ID edits instead.
 
 **Scheduling does not carry state automatically.** Your API/n8n/Make/custom workflow must read the previous record and pass it into the next input. This project includes the state contract; it does not claim to ship an automatically configured third-party workflow.
 

@@ -63,12 +63,17 @@ def _normal(app, config, *, review_id, text, rating, title="", date=None, versio
     text = text.strip()
     app_url = (f"https://play.google.com/store/apps/details?id={app.app_id}" if app.store == "google-play"
         else f"https://apps.apple.com/{config.country}/app/id{app.app_id}")
-    return {"reviewId": review_id, "reviewKey": f"{app.key}:{review_id}", "store": app.store, "appId": app.app_id,
+    row = {"reviewId": review_id, "reviewKey": f"{app.key}:{review_id}", "store": app.store, "appId": app.app_id,
         "appLabel": LABELS.get(app.key, app.app_id), "appLabelSource": "demo-preset" if app.key in LABELS else "app-id",
         "countryRequested": config.country, "languageRequested": config.language if app.store == "google-play" else None,
         "reviewTitle": title[:500] if isinstance(title, str) else "", "reviewText": text[:8000], "reviewTextTruncated": len(text) > 8000,
         "rating": rating, "reviewDate": _date(date), "appVersion": version[:200] if isinstance(version, str) and version else None,
         "helpfulVotes": _int(votes), "developerReply": reply, "appUrl": app_url, "sourceUrl": source_url}
+    try:
+        json.dumps(row, ensure_ascii=False, allow_nan=False).encode("utf-8")
+    except (UnicodeError, ValueError):
+        return None
+    return row
 
 
 def _google_payload(text):

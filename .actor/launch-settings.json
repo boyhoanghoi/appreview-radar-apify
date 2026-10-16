@@ -1,6 +1,6 @@
 {
   "title": "Google Play & App Store Reviews | AppReview Radar",
-  "description": "Find low-rated app reviews and feature-request phrases across Google Play and Apple App Store. Filter before billing; export CSV, keyword evidence and a Markdown feedback report. Skip saved review IDs on repeat runs.",
+  "description": "Track new-to-baseline and edited Google Play/App Store reviews. Filter ratings, app versions and visible replies before billing. Export CSV and feedback reports with keyword evidence; skip unchanged reviews using a supplied snapshot.",
   "seoTitle": "Google Play & App Store Reviews Scraper | AppReview Radar",
   "seoDescription": "Export app review shortlists for product research and ASO: rating filters, keyword topic evidence, developer replies when exposed, CSV and Markdown reports, repeat-review deduplication.",
   "categories": ["DEVELOPER_TOOLS", "SEO_TOOLS"],
