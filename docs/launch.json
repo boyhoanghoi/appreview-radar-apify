@@ -5,13 +5,13 @@
   "isPublic": true,
   "url": "https://apify.com/reliable_quatrain/google-play-app-store-review-radar",
   "build": {
-    "buildId": "VdArZDLue3c6M4734",
-    "finishedAt": "2026-10-16T04:41:30.905Z",
-    "buildNumberInt": 100002,
-    "buildNumber": "0.1.2"
+    "buildId": "EPkad7qI6DSNhl4jF",
+    "finishedAt": "2026-10-16T11:34:16.666Z",
+    "buildNumberInt": 200001,
+    "buildNumber": "0.2.1"
   },
-  "sourceCommit": "0db6a713d21cc72406b5e5cfa7c972dc0e64a005",
-  "unitTestsPassed": 40,
+  "sourceCommit": "ce73be247949be40bb376037b19bfaf619b209e3",
+  "unitTestsPassed": 51,
   "schemasValidated": 3,
   "billingEvent": "review-saved",
   "eventPriceUsd": 0.0005,
@@ -20,41 +20,60 @@
     "isPublic": true,
     "publicTitle": "Google Play & App Store Reviews | AppReview Radar",
     "latestBuild": {
-      "buildId": "VdArZDLue3c6M4734",
-      "finishedAt": "2026-10-16T04:41:30.905Z",
-      "buildNumberInt": 100002,
-      "buildNumber": "0.1.2"
+      "buildId": "EPkad7qI6DSNhl4jF",
+      "finishedAt": "2026-10-16T11:34:16.666Z",
+      "buildNumberInt": 200001,
+      "buildNumber": "0.2.1"
     },
-    "readmeImageVisible": true,
-    "starterGBVisible": true,
-    "githubImageHttpStatus": 200,
+    "snapshotDocsVisible": true,
     "pricePerReview": 0.0005
   },
   "smokeRunIds": [
-    "iJvJ75b2qSjlNHnzN",
-    "3qL49QZDN4fXO8jy1"
+    "ZENdNSPL7kb4xu0wr",
+    "78dk2cScEctkI0Uso"
   ],
   "cloudChecks": [
     {
-      "runId": "iJvJ75b2qSjlNHnzN",
+      "runId": "ZENdNSPL7kb4xu0wr",
       "savedReviews": 6,
-      "knownReviewsSkipped": 0,
+      "unchangedReviewsSkipped": 0,
+      "savedReviewChanges": {
+        "NEW": 6,
+        "UPDATED": 0,
+        "UNCHANGED": 0
+      },
       "chargedEventCounts": {
         "review-saved": 6
       },
-      "usageTotalUsd": 0.0005935847055531211,
-      "bothStoresVerified": true
+      "snapshotKeys": 6,
+      "usageTotalUsd": 0.0007272673742175103,
+      "populatedStores": [
+        "google-play"
+      ],
+      "appleSourceResult": "valid-empty-window",
+      "csvReportAndSnapshotVerified": true
     },
     {
-      "runId": "3qL49QZDN4fXO8jy1",
-      "savedReviews": 4,
-      "knownReviewsSkipped": 6,
-      "chargedEventCounts": {
-        "review-saved": 4
+      "runId": "78dk2cScEctkI0Uso",
+      "savedReviews": 3,
+      "unchangedReviewsSkipped": 5,
+      "savedReviewChanges": {
+        "NEW": 3,
+        "UPDATED": 0,
+        "UNCHANGED": 0
       },
-      "usageTotalUsd": 0.0005936175838841333,
-      "bothStoresVerified": true
+      "chargedEventCounts": {
+        "review-saved": 3
+      },
+      "snapshotKeys": 9,
+      "usageTotalUsd": 0.0005996294631361962,
+      "populatedStores": [
+        "google-play"
+      ],
+      "appleSourceResult": "valid-empty-window",
+      "csvReportAndSnapshotVerified": true
     }
   ],
+  "sameIdEditsVerifiedBy": "controlled-unit-and-actor-tests; no live customer edit asserted",
   "customerRevenueVerified": false
 }
