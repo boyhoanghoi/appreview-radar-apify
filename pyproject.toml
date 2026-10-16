@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "appreview-radar-apify"
+version = "0.1.0"
+description = "Google Play and App Store feedback shortlist with rating filters, evidence-based topic tags and repeat-review deduplication."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE", "licenses/*.txt"]
+dependencies = ["aiohttp>=3.12,<4"]
+
+[project.optional-dependencies]
+actor = ["apify>=3.4,<4"]
+
+[project.scripts]
+reviewradar = "reviewradar.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,10 @@
+{
+  "appPreset": "chatgpt",
+  "country": "us",
+  "language": "en",
+  "maxReviews": 20,
+  "maxReviewsPerApp": 10,
+  "maxPagesPerApp": 1,
+  "maxRating": 3,
+  "knownReviewIds": []
+}

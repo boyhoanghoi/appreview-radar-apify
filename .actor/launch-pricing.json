@@ -1,0 +1,13 @@
+{
+  "pricingInfos": [{
+    "pricingModel": "PAY_PER_EVENT",
+    "pricingPerEvent": {"actorChargeEvents": {"review-saved": {
+      "eventTitle": "Matching review saved",
+      "eventDescription": "One valid unique review saved after rating, keyword, date and known-ID filters. Empty/failed sources, duplicates, filtered and known reviews do not generate this event. CSV and feedback reports are included.",
+      "eventPriceUsd": 0.0005,
+      "isPrimaryEvent": true,
+      "isOneTimeEvent": false
+    }}},
+    "minimalMaxTotalChargeUsd": 0.0005
+  }]
+}

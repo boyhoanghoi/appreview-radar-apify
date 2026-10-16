@@ -1,0 +1,46 @@
+{
+  "actorSpecification": 1,
+  "title": "One saved matching app review per row",
+  "description": "Only filtered saved reviews. Tags are keyword mentions, not proven sentiment/intent. Country and language are request context. Author names/photos are omitted.",
+  "fields": {
+    "type": "object",
+    "properties": {
+      "reviewKey": {"type": "string", "title": "Stable review key"},
+      "reviewId": {"type": "string", "title": "Source review ID"},
+      "store": {"type": "string", "enum": ["google-play", "app-store"], "title": "App store"},
+      "appId": {"type": "string", "title": "Source app ID"},
+      "appLabel": {"type": "string", "title": "App label", "description": "Demo label when recognized, otherwise app ID. Not fetched or verified metadata."},
+      "appLabelSource": {"type": "string", "title": "App label source"},
+      "rating": {"type": "integer", "minimum": 1, "maximum": 5, "title": "Published star rating"},
+      "reviewTitle": {"type": "string", "title": "Review title (Apple when exposed)"},
+      "reviewText": {"type": "string", "title": "Published review text"},
+      "reviewTextTruncated": {"type": "boolean", "title": "Text shortened to 8,000 characters"},
+      "reviewDate": {"type": ["string", "null"], "title": "Source review timestamp", "description": "May reflect edits; not guaranteed first publication."},
+      "appVersion": {"type": ["string", "null"], "title": "App version exposed by review"},
+      "helpfulVotes": {"type": ["integer", "null"], "title": "Source helpful-vote count"},
+      "developerReply": {"type": ["object", "null"], "title": "Developer reply when exposed", "description": "Google Play only in this reader. Null does not prove there is no reply on other interfaces."},
+      "countryRequested": {"type": "string", "title": "Requested storefront"},
+      "languageRequested": {"type": ["string", "null"], "title": "Requested Google Play language hint"},
+      "topicTags": {"type": "array", "items": {"type": "string"}, "title": "Keyword topic mentions"},
+      "topicMatches": {"type": "array", "items": {"type": "object"}, "title": "Matched terms and evidence"},
+      "hasFeatureRequestPhrase": {"type": "boolean", "title": "Contains a configured request phrase"},
+      "analysisMethod": {"type": "string", "title": "Auditable keyword-rule version"},
+      "appUrl": {"type": "string", "title": "Public app page", "description": "App page for source lookup; may not open the exact review."},
+      "sourceUrl": {"type": "string", "title": "Public feed endpoint"},
+      "observedAt": {"type": "string", "title": "Observation time UTC"}
+    },
+    "required": ["reviewKey", "reviewId", "store", "appId", "rating", "reviewText", "appUrl", "observedAt"]
+  },
+  "views": {
+    "reviews": {
+      "title": "Feedback shortlist",
+      "transformation": {"fields": ["appLabel", "store", "rating", "reviewTitle", "reviewText", "topicTags", "reviewDate", "appVersion", "appUrl"]},
+      "display": {"component": "table", "properties": {"appUrl": {"format": "link"}, "topicTags": {"format": "array"}, "reviewDate": {"format": "date"}}}
+    },
+    "evidence": {
+      "title": "Keyword evidence and source context",
+      "transformation": {"fields": ["reviewKey", "topicMatches", "hasFeatureRequestPhrase", "countryRequested", "languageRequested", "sourceUrl", "observedAt"]},
+      "display": {"component": "table", "properties": {"topicMatches": {"format": "array"}, "sourceUrl": {"format": "link"}}}
+    }
+  }
+}
