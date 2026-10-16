@@ -34,7 +34,7 @@ Actor: https://apify.com/reliable_quatrain/google-play-app-store-review-radar
 
 Hướng dẫn và mã nguồn: https://github.com/boyhoanghoi/appreview-radar-apify
 
-Giá ra mắt dự kiến $0.50/1.000 đánh giá phù hợp được lưu, không có phí sự kiện khởi động; xem giá hiện hành ở tab Pricing. Đánh giá bị lọc hoặc có mã trong lịch sử được bỏ qua trước khi tính phí đánh giá. Mình chưa dùng số lượt tự chạy để tuyên bố có khách hàng trả tiền.
+Giá đã cấu hình $0.50/1.000 đánh giá phù hợp được lưu, không có phí sự kiện khởi động; xem giá hiện hành ở tab Pricing. Đánh giá bị lọc hoặc có mã trong lịch sử được bỏ qua trước khi tính phí đánh giá. Mình chưa dùng số lượt tự chạy để tuyên bố có khách hàng trả tiền.
 
 ## Short product listing
 

@@ -32,7 +32,7 @@ Raw review scraping is a low-price category. Mature direct competitors advertise
 
 AppReview Radar adds a normalized Android+iOS schema, literal English/Vietnamese topic evidence, filters before billing, Markdown and CSV exports, bounded coverage diagnostics, and an explicit saved-ID contract. These features reduce the manual steps between a source review and a research shortlist. Whether users value them enough to pay is **unverified**.
 
-Proposed launch rate: **$0.50/1,000 saved filtered reviews**, one `review-saved` event and no start event. The live Store Pricing tab determines the active rate. This rate must be tested against actual cloud operating cost and customer feedback; it is not a revenue forecast.
+Configured launch rate: **$0.50/1,000 saved filtered reviews**, one `review-saved` event and no start event. The live Store Pricing tab determines the active rate. Small owner-run cloud costs are recorded in [LAUNCH_STATUS.md](LAUNCH_STATUS.md); pricing still needs validation with actual customer feedback and workloads. It is not a revenue forecast.
 
 ## Technical feasibility and source distinctions
 

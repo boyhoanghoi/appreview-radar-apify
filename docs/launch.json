@@ -1,0 +1,60 @@
+{
+  "actorId": "NsFUW9rONTkafXY5T",
+  "name": "google-play-app-store-review-radar",
+  "username": "reliable_quatrain",
+  "isPublic": true,
+  "url": "https://apify.com/reliable_quatrain/google-play-app-store-review-radar",
+  "build": {
+    "buildId": "VdArZDLue3c6M4734",
+    "finishedAt": "2026-10-16T04:41:30.905Z",
+    "buildNumberInt": 100002,
+    "buildNumber": "0.1.2"
+  },
+  "sourceCommit": "0db6a713d21cc72406b5e5cfa7c972dc0e64a005",
+  "unitTestsPassed": 40,
+  "schemasValidated": 3,
+  "billingEvent": "review-saved",
+  "eventPriceUsd": 0.0005,
+  "publicVerification": {
+    "storeHttpStatus": 200,
+    "isPublic": true,
+    "publicTitle": "Google Play & App Store Reviews | AppReview Radar",
+    "latestBuild": {
+      "buildId": "VdArZDLue3c6M4734",
+      "finishedAt": "2026-10-16T04:41:30.905Z",
+      "buildNumberInt": 100002,
+      "buildNumber": "0.1.2"
+    },
+    "readmeImageVisible": true,
+    "starterGBVisible": true,
+    "githubImageHttpStatus": 200,
+    "pricePerReview": 0.0005
+  },
+  "smokeRunIds": [
+    "iJvJ75b2qSjlNHnzN",
+    "3qL49QZDN4fXO8jy1"
+  ],
+  "cloudChecks": [
+    {
+      "runId": "iJvJ75b2qSjlNHnzN",
+      "savedReviews": 6,
+      "knownReviewsSkipped": 0,
+      "chargedEventCounts": {
+        "review-saved": 6
+      },
+      "usageTotalUsd": 0.0005935847055531211,
+      "bothStoresVerified": true
+    },
+    {
+      "runId": "3qL49QZDN4fXO8jy1",
+      "savedReviews": 4,
+      "knownReviewsSkipped": 6,
+      "chargedEventCounts": {
+        "review-saved": 4
+      },
+      "usageTotalUsd": 0.0005936175838841333,
+      "bothStoresVerified": true
+    }
+  ],
+  "customerRevenueVerified": false
+}

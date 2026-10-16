@@ -91,7 +91,7 @@ Lần sau vẫn có thể nhận kết quả vì xuất hiện đánh giá mới
 
 ## Phí và giới hạn cần hiểu
 
-Giá ra mắt dự kiến: **$0.50/1.000 đánh giá phù hợp được lưu**, không có phí sự kiện khởi động Actor. Với tối đa 20 kết quả, phần phí sự kiện đánh giá là tối đa $0.01 ở mức giá đó. Giá đang áp dụng phải xem trong tab **Pricing**; chi phí nền tảng tuân theo gói/mô hình Apify tương ứng.
+Giá đã cấu hình khi ra mắt: **$0.50/1.000 đánh giá phù hợp được lưu**, không có phí sự kiện khởi động Actor. Với tối đa 20 kết quả, phần phí sự kiện đánh giá là tối đa $0.01 ở mức giá đó. Giá đang áp dụng phải xem trong tab **Pricing**; chi phí nền tảng tuân theo gói/mô hình Apify tương ứng.
 
 Đánh giá bị lọc, trùng, có trong danh sách đã biết hoặc nguồn lỗi không tạo sự kiện tính phí đánh giá. Nguồn web/feed chỉ cung cấp một phần dữ liệu; công cụ đọc tối đa 10 trang cho mỗi ứng dụng, và các trang có thể ít đánh giá hoặc trống. Không được coi đây là toàn bộ lịch sử hay mẫu đại diện cho mọi người dùng.
 

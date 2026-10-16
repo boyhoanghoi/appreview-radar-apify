@@ -78,7 +78,7 @@ A repeat is not guaranteed to return zero: fresh reviews may appear and a later 
 
 ## Cost and limits
 
-At the proposed launch rate of $0.50/1,000 saved reviews, the starter's maximum 20 rows generate $0.01 in review events. Check the Actor's live Pricing tab; platform usage follows the applicable plan/model. Failed sources, filtered rows, duplicates, and supplied known keys do not generate review events.
+At the configured launch rate of $0.50/1,000 saved reviews, the starter's maximum 20 rows generate $0.01 in review events. Check the Actor's live Pricing tab; platform usage follows the applicable plan/model. Failed sources, filtered rows, duplicates, and supplied known keys do not generate review events.
 
 Topic detection uses transparent English/Vietnamese phrases, not an LLM. It can match negations or miss paraphrases. “Feature request” is a rule match for human review, not verified intent or guaranteed product demand.
 
