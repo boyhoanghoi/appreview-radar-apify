@@ -30,6 +30,12 @@ it is independent of Google, Apple and the example app publishers.
   verified helpful-upvote counts.
 - No language filter is promised for Apple. `languageRequested` is null there.
 
+The 16 October 2026 Apify Cloud probe returned an empty valid US ChatGPT feed,
+while the GB ChatGPT feed returned reviews. The same US feed returned reviews
+locally. The reason for this difference is unverified. Starter examples use
+`country: "gb"`, which was verified on cloud; this does not guarantee future
+availability. No alternate URL, proxy or source-access bypass was added.
+
 ## Robots, transport and privacy
 
 The generic rules in [Google robots.txt](https://play.google.com/robots.txt)

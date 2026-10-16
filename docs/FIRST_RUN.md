@@ -11,7 +11,7 @@ Open [AppReview Radar](https://apify.com/reliable_quatrain/google-play-app-store
 ```json
 {
   "appPreset": "chatgpt",
-  "country": "us",
+  "country": "gb",
   "language": "en",
   "maxReviews": 20,
   "maxReviewsPerApp": 10,

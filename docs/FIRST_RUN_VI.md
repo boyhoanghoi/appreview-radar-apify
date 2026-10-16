@@ -11,7 +11,7 @@ Mở [AppReview Radar trên Apify](https://apify.com/reliable_quatrain/google-pl
 ```json
 {
   "appPreset": "chatgpt",
-  "country": "us",
+  "country": "gb",
   "language": "en",
   "maxReviews": 20,
   "maxReviewsPerApp": 10,

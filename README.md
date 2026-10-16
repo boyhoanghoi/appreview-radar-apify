@@ -26,7 +26,7 @@ Paste this into the Actor's JSON input:
 ```json
 {
   "appPreset": "chatgpt",
-  "country": "us",
+  "country": "gb",
   "language": "en",
   "maxReviews": 20,
   "maxReviewsPerApp": 10,
